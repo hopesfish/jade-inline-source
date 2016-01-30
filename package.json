@@ -1,0 +1,26 @@
+{
+  "name": "jade-inline-source",
+  "version": "1.0.0",
+  "description": "inline the css/js/images source in the jade template",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hopesfish/jade-inline-source.git"
+  },
+  "keywords": [
+    "inline",
+    "jade"
+  ],
+  "author": "hopesfish@163.com",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/hopesfish/jade-inline-source/issues"
+  },
+  "homepage": "https://github.com/hopesfish/jade-inline-source",
+  "devDependencies": {
+    "lazy": "^1.0.11"
+  }
+}
