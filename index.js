@@ -1,14 +1,13 @@
-var lazy  = require("lazy");
 var fs  = require("fs");
 var path = require('path');
 
-module.exports = function inlineSource(htmlpath, options, fn) {
+module.exports = function inlineSource(htmlcontent, options, fn) {
     var str = '';
 
     var SPACER = null;
 
-    new lazy(fs.createReadStream(htmlpath))
-        .lines
+    htmlcontent
+        .split('\n')
         .forEach(function(line) {
             var code = line.toString();
 
@@ -30,7 +29,7 @@ module.exports = function inlineSource(htmlpath, options, fn) {
                 if (scripts.length == 1) {
                     var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/src\=/, "");
                     str += code.replace(/script.*/, "") + 'script.\n';
-                    str += code.replace(/script.*/, "") + SPACER + fs.readFileSync(path.join(__dirname, options.base || '', filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                    str += code.replace(/script.*/, "") + SPACER + fs.readFileSync(path.join(options.base || __dirname, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
                 }            
             } else if (/\.css\?__inline/.test(code)) {
                 //var scripts = code.match(/src\=(\'|\")*.js(\'|\"")/g);
@@ -39,17 +38,16 @@ module.exports = function inlineSource(htmlpath, options, fn) {
                 if (scripts.length == 1) {
                     var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/href\=/, "");
                     str += code.replace(/link.*/, "") + 'style.\n';
-                    str += code.replace(/link.*/, "") + SPACER + fs.readFileSync(path.join(__dirname, options.base || '', filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                    str += code.replace(/link.*/, "") + SPACER + fs.readFileSync(path.join(options.base || __dirname, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
                 }            
             } else {
                 str += line.toString() + '\n';
             }
-        })
-        .join(function() {
-            if (typeof fn === 'function') {
-                fn(null, str);
-            }
         });
+
+    if (typeof fn === 'function') {
+        fn(null, str);
+    }
 
     return str;
 }

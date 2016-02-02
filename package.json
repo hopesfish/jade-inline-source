@@ -1,6 +1,6 @@
 {
   "name": "jade-inline-source",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "inline the css/js/images source in the jade template",
   "main": "index.js",
   "scripts": {
@@ -21,7 +21,7 @@
   },
   "homepage": "https://github.com/hopesfish/jade-inline-source",
   "devDependencies": {
-    "inline-source": "^4.2.2",
-    "lazy": "^1.0.11"
+  },
+  "dependencies": {
   }
 }
