@@ -6,10 +6,12 @@ html(lang="en")
       if (foo) {
          bar(1 + 5)
       }
-script.
-  console.info('a file');
-script.
-  console.info('script in a folder');
+    script.
+      console.info('hello');console.info('world');
+    script.
+      console.info('hello');console.info('world');
+    style.
+      p {    color: #fff;}
   body
     h1 Jade - node template engine
     #container.col
@@ -22,3 +24,7 @@ script.
         templating language with a
         strong focus on performance
         and powerful features.
+    div
+      div
+        style.
+          a {    color: #000;}

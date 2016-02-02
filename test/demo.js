@@ -1,1 +1,2 @@
-console.info('a file');
+console.info('hello');
+console.info('world');

@@ -1,9 +1,55 @@
-var lazy    = require("lazy"),
+var lazy  = require("lazy");
 var fs  = require("fs");
+var path = require('path');
 
- new lazy(fs.createReadStream('./MyVeryBigFile.csv'))
-     .lines
-     .forEach(function(line){
-         console.log(line.toString());
-     }
- );
+module.exports = function inlineSource(htmlpath, options, fn) {
+    var str = '';
+
+    var SPACER = null;
+
+    new lazy(fs.createReadStream(htmlpath))
+        .lines
+        .forEach(function(line) {
+            var code = line.toString();
+
+            if (!SPACER) {
+                if (/^\t{4}/.test(code)) {
+                    SPACER = '\t\t\t\t';
+                } else if (/^\t{2}/.test(code)) {
+                    SPACER = '\t\t';
+                } else if (/^\s{4}/.test(code)) {
+                    SPACER = '    ';
+                } else if (/^\s{2}/.test(code)) {
+                    SPACER = '  ';
+                }
+            }
+
+            if (/\.js\?__inline/.test(code)) {
+                //var scripts = code.match(/src\=(\'|\")*.js(\'|\"")/g);
+                var scripts = code.match(/src.*\.js\?__inline/g);
+                if (scripts.length == 1) {
+                    var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/src\=/, "");
+                    str += code.replace(/script.*/, "") + 'script.\n';
+                    str += code.replace(/script.*/, "") + SPACER + fs.readFileSync(path.join(__dirname, options.base || '', filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                }            
+            } else if (/\.css\?__inline/.test(code)) {
+                //var scripts = code.match(/src\=(\'|\")*.js(\'|\"")/g);
+                var scripts = code.match(/href.*\.css\?__inline/g);
+
+                if (scripts.length == 1) {
+                    var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/href\=/, "");
+                    str += code.replace(/link.*/, "") + 'style.\n';
+                    str += code.replace(/link.*/, "") + SPACER + fs.readFileSync(path.join(__dirname, options.base || '', filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                }            
+            } else {
+                str += line.toString() + '\n';
+            }
+        })
+        .join(function() {
+            if (typeof fn === 'function') {
+                fn(null, str);
+            }
+        });
+
+    return str;
+}

@@ -1,1 +1,2 @@
-console.info('script in a folder');
+console.info('hello');
+console.info('world');
