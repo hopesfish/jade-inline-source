@@ -4,6 +4,18 @@ var path = require('path');
 module.exports = function inlineSource(htmlcontent, options, fn) {
     var str = '';
 
+    var options = options || {};
+
+    if (options.base === undefined) {
+        fn(new Error('option base is required'), null);
+        return null;
+    }
+
+    if (typeof fn !== 'function') {
+        throw new Error('callback should be defined');
+        return null;
+    }
+
     var SPACER = null;
 
     htmlcontent
@@ -29,7 +41,7 @@ module.exports = function inlineSource(htmlcontent, options, fn) {
                 if (scripts.length == 1) {
                     var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/src\=/, "");
                     str += code.replace(/script.*/, "") + 'script.\n';
-                    str += code.replace(/script.*/, "") + SPACER + fs.readFileSync(path.join(options.base || __dirname, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                    str += code.replace(/script.*/, "") + SPACER + fs.readFileSync(path.join(options.base, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
                 }            
             } else if (/\.css\?__inline/.test(code)) {
                 //var scripts = code.match(/src\=(\'|\")*.js(\'|\"")/g);
@@ -38,7 +50,7 @@ module.exports = function inlineSource(htmlcontent, options, fn) {
                 if (scripts.length == 1) {
                     var filepath = scripts[0].replace(/\?__inline/, "").replace(/(\'|\")/, "").replace(/href\=/, "");
                     str += code.replace(/link.*/, "") + 'style.\n';
-                    str += code.replace(/link.*/, "") + SPACER + fs.readFileSync(path.join(options.base || __dirname, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
+                    str += code.replace(/link.*/, "") + SPACER + fs.readFileSync(path.join(options.base, filepath), 'utf8').replace(/\r\n/g, "").replace(/\n/g, "") + '\n';
                 }            
             } else {
                 str += line.toString() + '\n';
